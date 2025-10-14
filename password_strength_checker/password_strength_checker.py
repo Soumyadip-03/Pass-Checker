@@ -26,6 +26,7 @@ class State(rx.State):
     
     # History
     password_history: list[dict] = []
+    password_count: int = 0
     
     def analyze_password(self, password: str):
         """Enhanced password analysis"""
@@ -43,13 +44,15 @@ class State(rx.State):
             self.patterns_found = analysis.get("patterns", {}).get("issues", [])
             self.nist_compliant = self._check_nist_compliance(password)
             
-            # Add to history
-            if len(self.password_history) >= 5:
+            # Add to history (last 10 analyses)
+            self.password_count += 1
+            if len(self.password_history) >= 10:
                 self.password_history.pop(0)
             self.password_history.append({
                 "score": self.score,
                 "strength": self.strength,
-                "length": len(password)
+                "length": len(password),
+                "timestamp": f"Password {self.password_count}"
             })
         else:
             self._reset_analysis()
@@ -263,7 +266,7 @@ def modern_switch(is_checked, on_change, label: str, icon: str = "") -> rx.Compo
     )
 
 def strength_meter() -> rx.Component:
-    """Modern strength meter"""
+    """Modern strength meter with security tips"""
     return modern_card(
         rx.vstack(
             rx.hstack(
@@ -325,8 +328,108 @@ def strength_meter() -> rx.Component:
                 width="100%"
             ),
             
+            # Security Tips
+            rx.cond(
+                State.score < 80,
+                rx.box(
+                    rx.text(
+                        "🛡️ Security Tips:",
+                        style={
+                            "color": rx.cond(State.dark_mode, "white", "#1a202c"),
+                            "font_weight": "600",
+                            "font_size": "14px",
+                            "margin_bottom": "8px"
+                        }
+                    ),
+                    rx.text(
+                        rx.cond(
+                            State.score < 40,
+                            "• Use 12+ characters • Mix uppercase & lowercase • Add numbers & symbols",
+                            "• Consider adding more special characters • Avoid common patterns"
+                        ),
+                        style={
+                            "color": rx.cond(State.dark_mode, "rgba(255,255,255,0.8)", "rgba(0,0,0,0.8)"),
+                            "font_size": "12px",
+                            "line_height": "1.4"
+                        }
+                    ),
+                    style={
+                        "background": "rgba(102, 126, 234, 0.1)",
+                        "border_radius": "8px",
+                        "padding": "12px",
+                        "margin_top": "12px"
+                    }
+                )
+            ),
+            
             spacing="6",
             width="100%"
+        )
+    )
+
+def password_history() -> rx.Component:
+    """Password history tracking component"""
+    return rx.cond(
+        State.password_history.length() > 0,
+        modern_card(
+            rx.vstack(
+                rx.hstack(
+                    rx.text("📋", style={"font_size": "24px"}),
+                    rx.text(
+                        "Password History",
+                        style={
+                            "background": "linear-gradient(135deg, #667eea, #764ba2)",
+                            "background_clip": "text",
+                            "color": "transparent",
+                            "font_size": "20px",
+                            "font_weight": "700"
+                        }
+                    ),
+                    spacing="2"
+                ),
+                
+                rx.vstack(
+                    rx.foreach(
+                        State.password_history,
+                        lambda item: rx.hstack(
+                            rx.text(
+                                item["timestamp"],
+                                style={
+                                    "color": rx.cond(State.dark_mode, "rgba(255,255,255,0.7)", "rgba(0,0,0,0.7)"),
+                                    "font_size": "12px",
+                                    "width": "80px"
+                                }
+                            ),
+                            rx.text(
+                                f"{item['score']}%",
+                                style={
+                                    "color": "#60a5fa",
+                                    "font_weight": "600",
+                                    "font_size": "12px",
+                                    "width": "40px"
+                                }
+                            ),
+                            rx.text(
+                                item["strength"],
+                                style={
+                                    "color": rx.cond(State.dark_mode, "rgba(255,255,255,0.8)", "rgba(0,0,0,0.8)"),
+                                    "font_size": "12px",
+                                    "flex": "1"
+                                }
+                            ),
+                            justify="start",
+                            align="center",
+                            width="100%",
+                            style={"padding": "4px 0"}
+                        )
+                    ),
+                    spacing="1",
+                    width="100%"
+                ),
+                
+                spacing="4",
+                width="100%"
+            )
         )
     )
 
@@ -335,7 +438,7 @@ def password_analyzer() -> rx.Component:
     return modern_card(
         rx.vstack(
             rx.hstack(
-                rx.text("🛡️", style={"font_size": "32px"}),
+                rx.text("🔒", style={"font_size": "32px"}),
                 rx.text(
                     "Password Analyzer",
                     style={
@@ -371,7 +474,7 @@ def password_generator() -> rx.Component:
     return modern_card(
         rx.vstack(
             rx.hstack(
-                rx.text("🎲", style={"font_size": "32px"}),
+                rx.text("⚙️", style={"font_size": "32px"}),
                 rx.text(
                     "Password Generator",
                     style={
@@ -655,6 +758,7 @@ def index() -> rx.Component:
                 rx.vstack(
                     password_analyzer(),
                     password_generator(),
+                    password_history(),
                     spacing="8",
                     width="100%",
                     align="center"

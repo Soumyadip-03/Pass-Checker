@@ -214,7 +214,7 @@ def animated_input(placeholder: str, value: str, on_change, input_type: str = "t
         }
     )
 
-def modern_switch(is_checked, on_change, label: str, icon: str = "") -> rx.Component:
+def modern_switch(is_checked, on_change, label: str) -> rx.Component:
     """Premium rectangular animated switch"""
     return rx.hstack(
         rx.box(
@@ -246,20 +246,13 @@ def modern_switch(is_checked, on_change, label: str, icon: str = "") -> rx.Compo
                 "align_items": "center"
             }
         ),
-        rx.hstack(
-            rx.cond(
-                icon != "",
-                rx.text(icon, style={"font_size": "16px"})
-            ),
-            rx.text(
-                label,
-                style={
-                    "color": rx.cond(State.dark_mode, "rgba(255,255,255,0.9)", "rgba(0,0,0,0.9)"),
-                    "font_weight": "600",
-                    "font_size": "15px"
-                }
-            ),
-            spacing="2"
+        rx.text(
+            label,
+            style={
+                "color": rx.cond(State.dark_mode, "rgba(255,255,255,0.9)", "rgba(0,0,0,0.9)"),
+                "font_weight": "600",
+                "font_size": "15px"
+            }
         ),
         align="center",
         spacing="4"
@@ -314,14 +307,14 @@ def strength_meter() -> rx.Component:
             
             rx.hstack(
                 rx.text(
-                    f"🔐 {State.strength}",
+                    f"Strength: {State.strength}",
                     style={
                         "color": rx.cond(State.dark_mode, "white", "#1a202c"), 
                         "font_weight": "600"
                     }
                 ),
                 rx.text(
-                    f"⚡ {State.entropy:.1f} bits",
+                    f"Entropy: {State.entropy:.1f} bits",
                     style={"color": "#a855f7", "font_size": "14px"}
                 ),
                 justify="between",
@@ -333,7 +326,7 @@ def strength_meter() -> rx.Component:
                 State.score < 80,
                 rx.box(
                     rx.text(
-                        "🛡️ Security Tips:",
+                        "Security Tips:",
                         style={
                             "color": rx.cond(State.dark_mode, "white", "#1a202c"),
                             "font_weight": "600",
@@ -373,19 +366,15 @@ def password_history() -> rx.Component:
         State.password_history.length() > 0,
         modern_card(
             rx.vstack(
-                rx.hstack(
-                    rx.text("📋", style={"font_size": "24px"}),
-                    rx.text(
-                        "Password History",
-                        style={
-                            "background": "linear-gradient(135deg, #667eea, #764ba2)",
-                            "background_clip": "text",
-                            "color": "transparent",
-                            "font_size": "20px",
-                            "font_weight": "700"
-                        }
-                    ),
-                    spacing="2"
+                rx.text(
+                    "Password History",
+                    style={
+                        "background": "linear-gradient(135deg, #667eea, #764ba2)",
+                        "background_clip": "text",
+                        "color": "transparent",
+                        "font_size": "20px",
+                        "font_weight": "700"
+                    }
                 ),
                 
                 rx.vstack(
@@ -437,19 +426,15 @@ def password_analyzer() -> rx.Component:
     """Modern password analyzer"""
     return modern_card(
         rx.vstack(
-            rx.hstack(
-                rx.text("🔒", style={"font_size": "32px"}),
-                rx.text(
-                    "Password Analyzer",
-                    style={
-                        "background": "linear-gradient(135deg, #667eea, #764ba2)",
-                        "background_clip": "text",
-                        "color": "transparent",
-                        "font_size": "28px",
-                        "font_weight": "700"
-                    }
-                ),
-                spacing="3"
+            rx.text(
+                "Password Analyzer",
+                style={
+                    "background": "linear-gradient(135deg, #667eea, #764ba2)",
+                    "background_clip": "text",
+                    "color": "transparent",
+                    "font_size": "28px",
+                    "font_weight": "700"
+                }
             ),
             
             animated_input(
@@ -473,19 +458,15 @@ def password_generator() -> rx.Component:
     """Modern password generator"""
     return modern_card(
         rx.vstack(
-            rx.hstack(
-                rx.text("⚙️", style={"font_size": "32px"}),
-                rx.text(
-                    "Password Generator",
-                    style={
-                        "background": "linear-gradient(135deg, #667eea, #764ba2)",
-                        "background_clip": "text",
-                        "color": "transparent",
-                        "font_size": "28px",
-                        "font_weight": "700"
-                    }
-                ),
-                spacing="3"
+            rx.text(
+                "Password Generator",
+                style={
+                    "background": "linear-gradient(135deg, #667eea, #764ba2)",
+                    "background_clip": "text",
+                    "color": "transparent",
+                    "font_size": "28px",
+                    "font_weight": "700"
+                }
             ),
             
             # Length control
@@ -527,7 +508,7 @@ def password_generator() -> rx.Component:
                     rx.text(
                         f"{State.password_length} characters",
                         style={
-                            "color": rx.cond(State.dark_mode, "white", "#1a202c"), 
+                            "color": "white", 
                             "font_weight": "500", 
                             "text_align": "center", 
                             "flex": "1"
@@ -569,10 +550,10 @@ def password_generator() -> rx.Component:
                 ),
                 
                 rx.vstack(
-                    modern_switch(State.use_uppercase, lambda: State.set_use_uppercase(~State.use_uppercase), "Uppercase Letters", "🔤"),
-                    modern_switch(State.use_lowercase, lambda: State.set_use_lowercase(~State.use_lowercase), "Lowercase Letters", "🔡"),
-                    modern_switch(State.use_numbers, lambda: State.set_use_numbers(~State.use_numbers), "Numbers", "🔢"),
-                    modern_switch(State.use_symbols, lambda: State.set_use_symbols(~State.use_symbols), "Special Symbols", "🔣"),
+                    modern_switch(State.use_uppercase, lambda: State.set_use_uppercase(~State.use_uppercase), "Uppercase Letters"),
+                    modern_switch(State.use_lowercase, lambda: State.set_use_lowercase(~State.use_lowercase), "Lowercase Letters"),
+                    modern_switch(State.use_numbers, lambda: State.set_use_numbers(~State.use_numbers), "Numbers"),
+                    modern_switch(State.use_symbols, lambda: State.set_use_symbols(~State.use_symbols), "Special Symbols"),
                     spacing="5",
                     width="100%"
                 ),
@@ -583,11 +564,7 @@ def password_generator() -> rx.Component:
             
             # Generate button - More rectangular
             rx.button(
-                rx.hstack(
-                    rx.text("✨", style={"font_size": "20px"}),
-                    rx.text("Generate Secure Password", style={"font_weight": "700", "font_size": "16px"}),
-                    spacing="3"
-                ),
+                rx.text("Generate Secure Password", style={"font_weight": "700", "font_size": "16px"}),
                 on_click=State.generate_password,
                 style={
                     "width": "100%",
@@ -625,26 +602,18 @@ def password_generator() -> rx.Component:
                             style={
                                 "width": "100%",
                                 "height": "56px",
-                                "background": rx.cond(
-                                    State.dark_mode,
-                                    "rgba(255,255,255,0.05)",
-                                    "rgba(255,255,255,0.9)"
-                                ),
-                                "border": rx.cond(
-                                    State.dark_mode,
-                                    "2px solid rgba(255,255,255,0.1)",
-                                    "2px solid rgba(0,0,0,0.1)"
-                                ),
+                                "background": "rgba(255,255,255,0.05)",
+                                "border": "2px solid rgba(255,255,255,0.1)",
                                 "border_radius": "12px",
                                 "padding": "16px",
-                                "color": rx.cond(State.dark_mode, "white", "#1a202c"),
+                                "color": "white",
                                 "font_family": "monospace",
                                 "font_size": "16px"
                             }
                         ),
                         
                         rx.button(
-                            "📋",
+                            "Copy",
                             on_click=lambda: State.copy_to_clipboard(State.generated_password),
                             style={
                                 "width": "52px",
@@ -695,53 +664,25 @@ def index() -> rx.Component:
             rx.vstack(
                 # Header - Centered
                 rx.box(
-                    rx.hstack(
-                        rx.hstack(
-                            rx.text("🔐", style={"font_size": "48px"}),
-                            rx.vstack(
-                                rx.text(
-                                    "SecurePass",
-                                    style={
-                                        "background": "linear-gradient(135deg, #667eea, #764ba2)",
-                                        "background_clip": "text",
-                                        "color": "transparent",
-                                        "font_size": "36px",
-                                        "font_weight": "900"
-                                    }
-                                ),
-                                rx.text(
-                                    "Ultra-Modern Password Strength Checker",
-                                    style={
-                                        "color": rx.cond(State.dark_mode, "rgba(255,255,255,0.7)", "rgba(0,0,0,0.7)"), 
-                                        "font_size": "16px"
-                                    }
-                                ),
-                                spacing="0",
-                                align="start"
-                            ),
-                            spacing="4"
-                        ),
-                        
-                        rx.button(
-                            rx.cond(State.dark_mode, "🌙", "☀️"),
-                            on_click=State.toggle_theme,
+                    rx.vstack(
+                        rx.text(
+                            "SecurePass",
                             style={
-                                "width": "56px",
-                                "height": "56px",
-                                "background": "rgba(255,255,255,0.1)",
-                                "border": "1px solid rgba(255,255,255,0.2)",
-                                "border_radius": "16px",
-                                "font_size": "24px",
-                                "cursor": "pointer",
-                                "transition": "all 0.4s ease",
-                                "_hover": {
-                                    "transform": "scale(1.1)",
-                                    "background": "rgba(255,255,255,0.2)"
-                                }
+                                "background": "linear-gradient(135deg, #667eea, #764ba2)",
+                                "background_clip": "text",
+                                "color": "transparent",
+                                "font_size": "36px",
+                                "font_weight": "900"
                             }
                         ),
-                        
-                        justify="between",
+                        rx.text(
+                            "Ultra-Modern Password Strength Checker",
+                            style={
+                                "color": rx.cond(State.dark_mode, "rgba(255,255,255,0.7)", "rgba(0,0,0,0.7)"), 
+                                "font_size": "16px"
+                            }
+                        ),
+                        spacing="0",
                         align="center",
                         width="100%"
                     ),
@@ -767,7 +708,7 @@ def index() -> rx.Component:
                 # Footer - Centered
                 rx.box(
                     rx.text(
-                        "Built with ❤️ using Reflex • Ultra-Modern Security",
+                        "Built with Reflex • Ultra-Modern Security",
                         style={
                             "text_align": "center",
                             "color": rx.cond(State.dark_mode, "rgba(255,255,255,0.5)", "rgba(0,0,0,0.5)"),
